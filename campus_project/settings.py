@@ -133,3 +133,16 @@ AUTH_USER_MODEL = 'backend_login_system.CustomUser'
 # Outputs sent emails to the console during development
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST_USER = 'admin@campussphere.com'
+
+import os
+import dj_database_url
+
+if os.environ.get('RENDER'):
+    ALLOWED_HOSTS = ['*']
+    DEBUG = False
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    DATABASES = {
+        'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
+    }
+
