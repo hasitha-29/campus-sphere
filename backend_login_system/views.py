@@ -346,12 +346,15 @@ def report_found_view(request):
 def my_reports_view(request):
     if not request.user.is_authenticated or request.user.role != 'student':
         return redirect('login')
+
+    # Re-run auto-match every time page loads so cross-account matches are detected
+    auto_match_items()
         
     lost_items = LostItem.objects.filter(student=request.user).order_by('-created_at')
     found_items = FoundItem.objects.filter(finder=request.user).order_by('-created_at')
     
     if lost_items.filter(status='Matched').exists():
-        messages.info(request, "Match found for your lost item! Please contact Admin.")
+        messages.info(request, "🎉 A match has been found for your lost item! Please contact the Admin office to claim it.")
         
     return render(request, 'my_reports.html', {'lost_items': lost_items, 'found_items': found_items})
 
