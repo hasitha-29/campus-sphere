@@ -38,6 +38,8 @@ def login_view(request):
     try:
         if not CustomUser.objects.filter(username='admin').exists():
             CustomUser.objects.create_user(username='admin', password='admin123', role='admin')
+        if not CustomUser.objects.filter(username='student').exists():
+            CustomUser.objects.create_user(username='student', password='student123', role='student')
     except Exception:
         pass
     if request.method == 'POST':
