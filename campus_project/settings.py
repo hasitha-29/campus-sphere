@@ -4,14 +4,15 @@ Django settings for campus_project project.
 
 import os
 from pathlib import Path
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-hdn3jynzto_3t@ujo3qz^1yrjmvi0p-wwxn@ll6zpi=i3=n'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-hdn3jynzto_3t@ujo3qz^1yrjmvi0p-wwxn@ll6zpi=i3=n')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', '.pythonanywhere.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['*', '.pythonanywhere.com', '.railway.app', '127.0.0.1', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -27,6 +28,7 @@ AUTH_USER_MODEL = 'backend_login_system.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -55,18 +57,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'campus_project.wsgi.application'
 
 # --------------------------------------------------
-# Database Configuration (auto-detects environment)
+# Database: auto-detects environment
 # --------------------------------------------------
-if os.environ.get('PYTHONANYWHERE_SITE') or os.environ.get('PYTHONANYWHERE_DOMAIN'):
-    # PythonAnywhere: persistent SQLite
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    # Railway / Render with real PostgreSQL
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+        )
     }
-elif os.environ.get('RENDER'):
-    # Render.com: SQLite (free tier, ephemeral but functional)
+elif os.environ.get('PYTHONANYWHERE_SITE') or os.environ.get('PYTHONANYWHERE_DOMAIN'):
+    # PythonAnywhere: persistent SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -106,6 +110,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
