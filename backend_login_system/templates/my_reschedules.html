@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reschedule Requests - CampusSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-mid: #1e293b;
+            --primary-light: #1e3a8a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: #eff6ff;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-soft: #f1f5f9;
+            --text-main: #0f172a;
+            --text-mid: #475569;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --success: #10b981; --success-bg: #d1fae5;
+            --warning: #f59e0b; --warning-bg: #fef3c7;
+            --danger: #ef4444;  --danger-bg: #fee2e2;
+            --shadow-sm: 0 1px 3px rgba(15,23,42,0.06);
+            --shadow-md: 0 4px 16px rgba(15,23,42,0.08);
+        }
+        body { background: var(--background); font-family: 'Inter', sans-serif; color: var(--primary); }
+        .topbar {
+            background: var(--surface); border-bottom: 1px solid var(--border-color);
+            padding: 14px 32px; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .brand-logo {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white; border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; font-weight: 800; font-size: 0.9rem; margin-right: 10px;
+        }
+        .page-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white; padding: 40px 0 50px;
+        }
+        .request-card {
+            background: var(--surface); border-radius: 16px;
+            border: 1px solid var(--border-color); padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 10px 20px rgba(0,0,0,0.03);
+            transition: all 0.2s; margin-bottom: 16px;
+        }
+        .request-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); }
+        .slot-arrow {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--border-soft); border-radius: 10px; padding: 12px 16px;
+            margin: 16px 0;
+        }
+        .slot-box {
+            flex: 1; text-align: center; background: white;
+            border-radius: 8px; padding: 10px; border: 1px solid var(--border-color);
+        }
+        .slot-box .label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); }
+        .slot-box .time { font-size: 1rem; font-weight: 700; color: var(--primary); margin-top: 4px; }
+        .badge-status {
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+        }
+        .badge-pending { background: #fef3c7; color: #d97706; }
+        .badge-approved { background: #d1fae5; color: #059669; }
+        .badge-rejected { background: #fee2e2; color: #dc2626; }
+        .nav-link-custom { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.9rem; }
+        .nav-link-custom:hover { color: var(--accent); }
+        .empty-state { text-align: center; padding: 80px 20px; }
+        .empty-icon {
+            width: 80px; height: 80px; background: var(--border-soft); border-radius: 20px;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+        }
+    
+        /* ── Unified Navy Topbar (Student) ── */
+        .topbar, .navbar, header.topbar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important;
+            border-bottom: none !important;
+        }
+        .topbar .navbar-brand, .topbar h4, .topbar .brand-name { color: white !important; }
+        .topbar .btn-outline-secondary, .topbar .btn { border-color: rgba(255,255,255,0.2) !important; color: rgba(255,255,255,0.85) !important; }
+        .topbar .btn:hover { background: rgba(255,255,255,0.15) !important; color: white !important; }
+        
+        /* ── Unified Card + Button styles ── */
+        .btn-primary, .btn-accent {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+        .btn-primary:hover { background: #1d4ed8 !important; border-color: #1d4ed8 !important; transform: translateY(-1px); }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+        }
+        </style>
+    <link rel="stylesheet" href="{% static 'css/campus.css' %}">
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+    <div class="d-flex align-items-center">
+        <div class="brand-logo">CS</div>
+        <span style="font-size: 1.1rem; font-weight: 800;">CampusSphere</span>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <a href="{% url 'student_dashboard' %}" class="nav-link-custom"><i class="bi bi-grid me-1"></i>Dashboard</a>
+        <a href="{% url 'reschedule_request' %}" class="btn btn-primary btn-sm rounded-pill px-3 fw-600">
+            <i class="bi bi-plus-lg me-1"></i>New Request
+        </a>
+    </div>
+</div>
+
+<!-- Hero -->
+<div class="page-hero">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <a href="{% url 'student_dashboard' %}" class="text-white-50 text-decoration-none small"><i class="bi bi-house"></i> Home</a>
+            <span class="text-white-50 small">/</span>
+            <span class="text-white small">My Reschedule Requests</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <h1 class="fw-800 mb-1" style="font-size: 2rem; letter-spacing: -0.5px;">My Reschedule Requests</h1>
+                <p class="mb-0" style="color: rgba(255,255,255,0.7);">Track the status of all your reschedule requests.</p>
+            </div>
+            <a href="{% url 'reschedule_request' %}" class="btn btn-light fw-700 rounded-3 px-4">
+                <i class="bi bi-plus-lg me-2"></i>New Request
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if not reschedules %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-arrow-repeat" style="font-size: 2rem; color: var(--text-light);"></i>
+            </div>
+            <h5 class="fw-700 mb-2">No Requests Yet</h5>
+            <p class="text-muted mb-4">You haven't submitted any reschedule requests yet.</p>
+            <a href="{% url 'reschedule_request' %}" class="btn btn-primary rounded-pill px-4">Request a Reschedule</a>
+        </div>
+    {% else %}
+        <div class="row mb-3">
+            <div class="col">
+                <p class="text-muted small fw-500">Showing {{ reschedules|length }} request{{ reschedules|length|pluralize }}</p>
+            </div>
+        </div>
+
+        {% for r in reschedules %}
+        <div class="request-card">
+            <div class="d-flex align-items-start justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="fw-700" style="font-size: 1.05rem;">{{ r.booking.service_type }}</span>
+                        <span class="text-muted small">— Booking #{{ r.booking.id }}</span>
+                    </div>
+                    <div class="text-muted small">
+                        <i class="bi bi-calendar3 me-1"></i>Submitted: {{ r.created_at|date:"M d, Y" }} at {{ r.created_at|time:"h:i A" }}
+                    </div>
+                </div>
+                <span class="badge-status 
+                    {% if r.status == 'Pending' %}badge-pending
+                    {% elif r.status == 'Approved' %}badge-approved
+                    {% else %}badge-rejected{% endif %}">
+                    {% if r.status == 'Pending' %}<i class="bi bi-hourglass-split me-1"></i>
+                    {% elif r.status == 'Approved' %}<i class="bi bi-check-circle me-1"></i>
+                    {% else %}<i class="bi bi-x-circle me-1"></i>{% endif %}
+                    {{ r.status }}
+                </span>
+            </div>
+
+            <div class="slot-arrow">
+                <div class="slot-box">
+                    <div class="label">Current Slot</div>
+                    <div class="time"><i class="bi bi-clock me-1 text-muted"></i>{{ r.old_slot_time }}</div>
+                </div>
+                <div style="color: var(--text-light); font-size: 1.4rem;"><i class="bi bi-arrow-right"></i></div>
+                <div class="slot-box">
+                    <div class="label">Requested Slot</div>
+                    <div class="time" style="color: {% if r.status == 'Approved' %}#059669{% elif r.status == 'Rejected' %}#dc2626{% else %}var(--accent){% endif %};">
+                        <i class="bi bi-clock me-1"></i>{{ r.requested_slot_time }}
+                    </div>
+                </div>
+            </div>
+
+            {% if r.reason %}
+            <div class="d-flex align-items-start gap-2 mt-2" style="background: var(--border-soft); border-radius: 10px; padding: 12px 16px;">
+                <i class="bi bi-chat-square-quote text-muted mt-1"></i>
+                <span class="text-muted small" style="font-style: italic;">{{ r.reason }}</span>
+            </div>
+            {% endif %}
+
+            {% if r.status == 'Approved' %}
+            <div class="mt-3 p-3 rounded-3" style="background: #d1fae5; border: 1px solid #a7f3d0;">
+                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                <span class="fw-600 text-success" style="font-size: 0.9rem;">Your booking has been rescheduled to <strong>{{ r.requested_slot_time }}</strong>. Please be on time!</span>
+            </div>
+            {% elif r.status == 'Rejected' %}
+            <div class="mt-3 p-3 rounded-3" style="background: #fee2e2; border: 1px solid #fecaca;">
+                <i class="bi bi-x-circle-fill text-danger me-2"></i>
+                <span class="fw-600 text-danger" style="font-size: 0.9rem;">This request was rejected. Please contact Admin or <a href="{% url 'reschedule_request' %}" class="text-danger">submit a new request</a>.</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+/* ================================================================
+   CampusSphere — Global Design System (Refined Slate-Navy)
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* Refined Slate-Navy Palette */
+    --navy:        #1e2d4a;
+    --navy-hover:  #253558;
+    --navy-light:  #2e4070;
+    
+    --accent:      #3b72b0;
+    --accent-soft: #eaf1f8;
+
+    /* Surfaces */
+    --surface:     #ffffff;
+    --bg:          #f5f7fa;
+    --border:      #e1e7ef;
+    --border-soft: #edf1f7;
+
+    /* Text */
+    --text-dark:   #1a2540;
+    --text-mid:    #4a5f7a;
+    --text-muted:  #8fa3bc;
+
+    /* Status Colors */
+    --green-bg:    #eaf7f0;  --green-text: #1a6b41;
+    --red-bg:      #fdedef;  --red-text:   #b83249;
+    --amber-bg:    #fdf6e3;  --amber-text: #8a6514;
+
+    /* Shadows */
+    --shadow-sm:   0 1px 3px rgba(30,45,74,0.06), 0 4px 16px rgba(30,45,74,0.04);
+    --shadow-md:   0 2px 8px rgba(30,45,74,0.08), 0 8px 24px rgba(30,45,74,0.06);
+}
+
+/* ── Reset ───────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+    background: var(--bg) !important;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+}
+
+/* ── Layout ──────────────────────────────────── */
+.main, .main-content, .cs-main { 
+    margin-left: 210px; 
+    padding: 26px 30px 50px; 
+    min-height: 100vh;
+}
+.wrap, .cs-wrap { 
+    max-width: 1400px; 
+    margin: 0 auto; 
+    padding: 24px 28px 48px; 
+}
+
+/* ── Sidebar (Admin) ─────────────────────────── */
+.sidebar, .cs-sidebar {
+    position: fixed; top: 0; left: 0;
+    width: 210px !important; height: 100vh;
+    background: var(--navy) !important;
+    display: flex; flex-direction: column;
+    z-index: 1000;
+    border-right: none !important;
+}
+.sidebar-brand, .cs-sb-brand, .sb-brand {
+    padding: 18px 16px 14px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+    display: flex !important; align-items: center !important; gap: 9px !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+}
+.brand-logo, .cs-sb-logo, .sb-icon {
+    width: 28px !important; height: 28px !important;
+    background: rgba(255,255,255,0.12) !important;
+    border-radius: 6px !important;
+    display: grid !important; place-items: center !important;
+    font-size: 0.7rem !important; font-weight: 700 !important; color: #fff !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+.sidebar-brand span, .cs-sb-name, .sb-brand-name {
+    font-size: 0.88rem !important; font-weight: 700 !important; color: #fff !important;
+}
+.menu-category, .cs-sb-label, .sb-lbl {
+    font-size: 0.6rem !important; font-weight: 600 !important; letter-spacing: 1.2px !important;
+    text-transform: uppercase !important; color: rgba(255,255,255,0.28) !important;
+    padding: 0 16px !important; margin-bottom: 3px !important; margin-top: 14px !important;
+}
+.menu-item, .cs-sb-link, .sb-a {
+    display: flex !important; align-items: center !important; gap: 8px !important;
+    padding: 8px 16px !important; font-size: 0.8rem !important; font-weight: 500 !important;
+    color: rgba(255,255,255,0.52) !important; text-decoration: none !important;
+    border-left: 2px solid transparent !important; transition: all .15s !important;
+    border-radius: 0 !important; margin-bottom: 0 !important;
+}
+.menu-item:hover, .cs-sb-link:hover, .sb-a:hover {
+    color: rgba(255,255,255,0.85) !important; background: rgba(255,255,255,0.05) !important;
+    border-left-color: rgba(255,255,255,0.18) !important;
+}
+.menu-item.active, .cs-sb-link.active, .sb-a.active {
+    color: #fff !important; background: rgba(255,255,255,0.09) !important;
+    border-left-color: #7db3e0 !important;
+}
+.menu-item i, .cs-sb-link i, .sb-a i { font-size: 0.85rem !important; width: 15px !important; text-align: center !important; margin-right: 0 !important; }
+.sidebar-footer, .cs-sb-footer, .sb-footer {
+    padding: 10px 0 !important; border-top: 1px solid rgba(255,255,255,0.07) !important; margin-top: auto !important;
+}
+.user-profile-section {
+    padding: 16px 20px !important; margin: 0 12px 10px !important;
+    border-radius: 10px !important; background-color: rgba(255,255,255,0.04) !important;
+    display: flex !important; align-items: center !important;
+}
+.user-avatar {
+    width: 32px !important; height: 32px !important; border-radius: 50% !important;
+    background-color: var(--accent) !important; color: white !important;
+    display: flex !important; align-items: center !important; justify-content: center !important;
+    font-weight: 600 !important; margin-right: 12px !important; font-size: 0.85rem !important;
+}
+/* ── Topbar (Student) ────────────────────────── */
+.topbar, .cs-topbar, .top {
+    background: var(--navy) !important; height: 54px !important;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px !important; position: sticky; top: 0; z-index: 100;
+    border-bottom: none !important;
+}
+.topbar-brand, .cs-topbar-brand, .top-brand { display: flex; align-items: center; gap: 10px; }
+.topbar-logo, .cs-topbar-logo, .top-icon {
+    width: 28px; height: 28px; background: rgba(255,255,255,0.13) !important;
+    border-radius: 6px; display: grid; place-items: center;
+    font-size: 0.72rem; font-weight: 700; color: white;
+}
+.topbar-name, .cs-topbar-name, .top-name { font-size: 0.88rem !important; font-weight: 700 !important; color: white !important; }
+.btn-topbar, .cs-btn-topbar, .btn-top {
+    background: rgba(255,255,255,0.1) !important; color: rgba(255,255,255,0.85) !important;
+    border: 1px solid rgba(255,255,255,0.12) !important; border-radius: 7px !important;
+    padding: 6px 14px !important; font-size: 0.78rem !important; font-weight: 600 !important;
+}
+.btn-topbar:hover, .cs-btn-topbar:hover, .btn-top:hover { background: rgba(255,255,255,0.18) !important; color: white !important; }
+
+/* ── Page Headers ────────────────────────────── */
+h1.pg, h2.mb-1, .page-header h2, .page-title, .cs-page-title {
+    font-size: 1.25rem !important; font-weight: 700 !important; color: var(--text-dark) !important;
+    margin: 0 0 3px !important; letter-spacing: -0.3px !important;
+}
+.pg-sub, .page-sub, .cs-page-sub, .page-header p {
+    font-size: 0.79rem !important; color: var(--text-muted) !important; margin: 0 0 20px !important;
+}
+
+/* ── Buttons ─────────────────────────────────── */
+.btn-primary, .btn-primary-cs, .btn-n {
+    background: var(--navy) !important; color: #fff !important; border: none !important;
+    border-radius: 8px !important; padding: 9px 18px !important; font-size: 0.8rem !important;
+    font-weight: 600 !important; transition: opacity .15s, transform .1s !important;
+}
+.btn-primary:hover, .btn-primary-cs:hover, .btn-n:hover {
+    opacity: .88 !important; transform: translateY(-1px) !important;
+}
+.btn-outline, .btn-outline-cs, .btn-o {
+    background: transparent !important; color: var(--navy) !important;
+    border: 1.5px solid var(--border) !important; border-radius: 8px !important;
+    padding: 8px 16px !important; font-size: 0.8rem !important; font-weight: 600 !important;
+    transition: all .15s !important;
+}
+.btn-outline:hover, .btn-outline-cs:hover, .btn-o:hover {
+    border-color: var(--navy) !important; background: #f0f3f8 !important; color: var(--navy) !important;
+}
+
+/* ── Cards / Panels ──────────────────────────── */
+.premium-card, .panel, .cs-card {
+    background: var(--surface) !important; border: 1px solid var(--border) !important;
+    border-radius: 12px !important; box-shadow: var(--shadow-sm) !important;
+}
+.panel-header, .cs-card-header, .ph, .panel-title {
+    padding: 13px 18px !important; border-bottom: 1px solid var(--border-soft) !important;
+    font-size: 0.85rem !important; font-weight: 600 !important; color: var(--text-dark) !important;
+    margin-bottom: 0 !important;
+}
+.panel-body, .cs-card-body { padding: 18px !important; }
+
+/* ── Stat Cards (Admin/Student Dashboard) ────── */
+.stat-card-inner .stat-icon-wrapper {
+    width: 42px !important; height: 42px !important; border-radius: 8px !important; font-size: 1.1rem !important;
+}
+.stat-value { font-size: 1.6rem !important; font-weight: 700 !important; color: var(--text-dark) !important; letter-spacing: -0.4px !important; margin-top: 12px !important; }
+.stat-label { font-size: 0.72rem !important; color: var(--text-muted) !important; font-weight: 600 !important; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px !important; }
+
+/* ── Action Cards (Student Dashboard) ────────── */
+.action-card {
+    background: var(--surface) !important; border-radius: 10px !important; padding: 14px !important;
+    border: 1px solid var(--border) !important; box-shadow: var(--shadow-sm) !important;
+    color: var(--text-dark) !important; font-weight: 600 !important; font-size: 0.85rem !important;
+}
+.action-card:hover {
+    border-color: var(--accent) !important; color: var(--accent) !important; transform: translateY(-2px) !important;
+}
+.action-card i { font-size: 1.1rem !important; color: var(--text-muted) !important; margin-right: 10px !important; }
+.action-card:hover i { color: var(--accent) !important; }
+
+/* ── Lists ───────────────────────────────────── */
+.list-row {
+    padding: 12px 18px !important; border-bottom: 1px solid var(--border-soft) !important;
+}
+.subject-name { font-weight: 600 !important; font-size: 0.82rem !important; color: var(--text-dark) !important; }
+
+/* ── Badges ──────────────────────────────────── */
+.badge-premium { padding: 4px 10px !important; border-radius: 20px !important; font-size: 0.68rem !important; font-weight: 600 !important; }
+.badge-success { background: var(--green-bg) !important; color: var(--green-text) !important; }
+.badge-warning { background: var(--amber-bg) !important; color: var(--amber-text) !important; }
+.badge-danger  { background: var(--red-bg) !important; color: var(--red-text) !important; }
+.badge-neutral { background: var(--border-soft) !important; color: var(--text-muted) !important; }

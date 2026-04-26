@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yearly Timetable Balancer – CampusSphere Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/campus.css' %}">
+    <style>
+        /* Timetable-specific styles */
+        .tt { width:100%; border-collapse:collapse; font-size:0.78rem; }
+        .tt thead th {
+            background: #f1f5f9; color: var(--text-muted);
+            font-size:0.68rem; font-weight:600; letter-spacing:.5px; text-transform:uppercase;
+            padding:10px 8px; border-bottom:1px solid var(--border); text-align:center; white-space:nowrap;
+        }
+        .tt thead th:first-child { text-align:left; min-width:145px; padding-left:16px; }
+        .tt tbody tr { border-bottom:1px solid var(--border-soft); }
+        .tt tbody tr:last-child { border-bottom:none; }
+        .tt tbody tr:hover td { background:#fafbfe; }
+        .tt td { padding:7px 7px; vertical-align:middle; }
+        .tt td:first-child { font-weight:600; font-size:0.74rem; color:var(--text-mid); background:#f8fafc; border-right:1px solid var(--border-soft); white-space:nowrap; padding-left:14px; }
+
+        .cell { border-radius:6px; padding:5px 8px; text-align:center; line-height:1.3; }
+        .c-ok   { background:var(--green-bg); color:#065f46; }
+        .c-hol  { background:var(--red-bg);   color:#991b1b; }
+        .c-mk   { background:var(--amber-bg); color:#92400e; }
+        .c-sub  { font-size:0.73rem; font-weight:600; }
+        .c-tag  { font-size:0.62rem; opacity:.7; margin-top:1px; }
+        .c-empty { color:#c8d6e5; font-size:0.76rem; }
+
+        .stat-strip { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-bottom:18px; }
+        .stat-card  { background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--accent); border-radius:10px; padding:13px 14px; box-shadow:var(--shadow-sm); }
+        .s-lbl { font-size:0.66rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; }
+        .s-val { font-size:1.3rem; font-weight:700; color:var(--text); letter-spacing:-.4px; }
+        .s-sub { font-size:0.66rem; color:var(--text-muted); margin-top:2px; }
+
+        .ctrl-bar { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px 18px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:18px; box-shadow:var(--shadow-sm); }
+        .divider  { width:1px; height:28px; background:var(--border); }
+        .legend { display:flex; gap:14px; }
+        .lg { display:flex; align-items:center; gap:5px; font-size:0.72rem; font-weight:500; color:var(--text-mid); }
+        .ld { width:9px; height:9px; border-radius:2px; }
+        .cnt { background:var(--border-soft); color:var(--text-muted); font-size:0.7rem; font-weight:600; padding:2px 9px; border-radius:20px; }
+
+        .empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:52px 24px; text-align:center; }
+        .empty i { font-size:2rem; color:var(--text-light); margin-bottom:12px; }
+        .empty p { font-size:0.82rem; color:var(--text-muted); margin:0; }
+    
+        /* ── Unified Navy Sidebar ── */
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background: #0f172a !important;
+            position: fixed;
+            left: 0; top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            border-right: none;
+        }
+        .sidebar-brand { color: white !important; }
+        .sidebar-brand .brand-logo { background: linear-gradient(135deg, #2563eb, #1e3a8a) !important; }
+        .menu-category { color: rgba(255,255,255,0.3) !important; }
+        .menu-item {
+            color: rgba(255,255,255,0.6) !important;
+            border-radius: 8px;
+            margin-bottom: 2px;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(37,99,235,0.18) !important;
+            color: white !important;
+            border-left: 2px solid #2563eb !important;
+        }
+        .user-profile-section { background: rgba(255,255,255,0.07) !important; border-radius: 10px; }
+        .user-avatar { background: #2563eb !important; }
+        .user-name, .user-role { color: rgba(255,255,255,0.85) !important; }
+        .user-role { color: rgba(255,255,255,0.4) !important; }
+        .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.08) !important; }
+        .sidebar-footer a { color: rgba(255,255,255,0.5) !important; }
+        .sidebar-footer a:hover { color: #ef4444 !important; }
+        
+        /* ── Unified Card + Button styles ── */
+        .btn-primary, .btn-accent {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+        .btn-primary:hover { background: #1d4ed8 !important; border-color: #1d4ed8 !important; transform: translateY(-1px); }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+        }
+        </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="cs-sidebar">
+    <div class="cs-sb-brand">
+        <div class="cs-sb-logo">CS</div>
+        <span class="cs-sb-name">CampusSphere</span>
+    </div>
+    <div class="cs-sb-section">
+        <div class="cs-sb-label">Overview</div>
+        <a href="{% url 'admin_dashboard' %}" class="cs-sb-link"><i class="bi bi-grid"></i> Dashboard</a>
+    </div>
+    <div class="cs-sb-section">
+        <div class="cs-sb-label">Applications</div>
+        <a href="{% url 'admin_leave_dashboard' %}"      class="cs-sb-link"><i class="bi bi-airplane"></i> Leave</a>
+        <a href="{% url 'admin_queue_dashboard' %}"      class="cs-sb-link"><i class="bi bi-clock"></i> Queue Booking</a>
+        <a href="{% url 'admin_lost_found_dashboard' %}" class="cs-sb-link"><i class="bi bi-box-seam"></i> Lost & Found</a>
+    </div>
+    <div class="cs-sb-section">
+        <div class="cs-sb-label">Timetable</div>
+        <a href="{% url 'admin_timetable_dashboard' %}" class="cs-sb-link"><i class="bi bi-calendar3"></i> Weekly Generator</a>
+        <a href="{% url 'admin_yearly_timetable' %}"    class="cs-sb-link active"><i class="bi bi-calendar-check"></i> Yearly Balancer</a>
+        <a href="{% url 'admin_class_reschedule' %}"    class="cs-sb-link"><i class="bi bi-arrow-repeat"></i> Class Reschedule</a>
+    </div>
+    <div class="cs-sb-spacer"></div>
+    <div class="cs-sb-footer">
+        <a href="{% url 'logout' %}" class="cs-sb-link"><i class="bi bi-box-arrow-right"></i> Sign Out</a>
+    </div>
+</nav>
+
+<!-- Main content -->
+<main class="cs-main">
+
+    <!-- Page header matching screenshot -->
+    <div style="margin-bottom:20px;">
+        <h1 class="cs-page-title">Yearly Timetable Balancer</h1>
+        <p class="cs-page-sub">Generate full-year plan → apply holidays → auto-reschedule missed classes.</p>
+    </div>
+
+    <!-- Alerts -->
+    {% if messages %}
+        {% for m in messages %}
+        <div class="alert alert-{{ m.tags }} mb-3 py-2 px-3" style="font-size:0.81rem; border-radius:8px;">
+            <i class="bi bi-info-circle me-2"></i>{{ m }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Controls -->
+    <div class="ctrl-bar">
+        <a href="{% url 'generate_yearly_timetable' %}" class="btn-cs-outline">
+            <i class="bi bi-lightning-charge"></i> Step 1 — Generate Year Plan
+        </a>
+        <div class="divider"></div>
+        <a href="{% url 'apply_and_reschedule' %}" class="btn-cs-primary">
+            <i class="bi bi-arrow-repeat"></i> Step 2 — Apply Holidays & Reschedule
+        </a>
+        <span style="font-size:0.75rem; color:var(--text-muted); margin-left:4px;">
+            Each cancelled holiday class moves to the <strong>next available working day</strong>.
+        </span>
+    </div>
+
+    <!-- Subject stats -->
+    {% if stats %}
+    <div class="stat-strip">
+        {% for s in stats %}
+        <div class="stat-card" style="border-top-color:{% if s.ok %}var(--green){% else %}var(--red){% endif %};">
+            <div class="s-lbl">{{ s.name }}</div>
+            <div class="s-val">{{ s.done }}<span style="font-size:.85rem;font-weight:400;color:var(--text-muted);">/{{ s.required }}</span></div>
+            <div class="s-sub">{{ s.missed }} holiday gap{{ s.missed|pluralize }}</div>
+            {% if s.ok %}
+                <span class="pill pill-green mt-1"><i class="bi bi-check-circle" style="font-size:.65rem;"></i> Balanced</span>
+            {% else %}
+                <span class="pill pill-red mt-1"><i class="bi bi-exclamation-circle" style="font-size:.65rem;"></i> Gap</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Timetable grid panel -->
+    <div class="cs-card">
+        <div class="cs-card-header">
+            <h6>Schedule Preview — First 15 Working Days</h6>
+            <div style="display:flex; align-items:center; gap:14px;">
+                <div class="legend">
+                    <div class="lg"><div class="ld" style="background:var(--green);"></div>Scheduled</div>
+                    <div class="lg"><div class="ld" style="background:var(--red);"></div>Holiday</div>
+                    <div class="lg"><div class="ld" style="background:var(--amber);"></div>Rescheduled</div>
+                </div>
+                <span class="cnt">{{ total }} total classes</span>
+            </div>
+        </div>
+
+        {% if not rows %}
+        <div class="empty">
+            <i class="bi bi-calendar-x"></i>
+            <p>No timetable generated yet.<br>Click <strong>Step 1 — Generate Year Plan</strong> to start.</p>
+        </div>
+        {% else %}
+        <div style="overflow-x:auto;">
+            <table class="tt">
+                <thead>
+                    <tr>
+                        <th>Date / Day</th>
+                        {% for slot in slots %}<th>{{ slot }}</th>{% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td>{{ row.date }}</td>
+                        {% for cell in row.cells %}
+                        <td>
+                            {% if cell %}
+                            <div class="cell {% if cell.status == 'Scheduled' %}c-ok{% elif cell.status == 'Holiday' %}c-hol{% else %}c-mk{% endif %}">
+                                <div class="c-sub">{{ cell.subject_name }}</div>
+                                <div class="c-tag">
+                                    {% if cell.status == 'Scheduled' %}✓ Scheduled
+                                    {% elif cell.status == 'Holiday' %}✕ Holiday
+                                    {% else %}↻ Makeup{% endif %}
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="c-empty">—</span>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

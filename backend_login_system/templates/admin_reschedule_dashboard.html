@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin – Reschedule Dashboard - CampusSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-mid: #1e293b;
+            --primary-light: #1e3a8a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: #eff6ff;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-soft: #f1f5f9;
+            --text-main: #0f172a;
+            --text-mid: #475569;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --success: #10b981; --success-bg: #d1fae5;
+            --warning: #f59e0b; --warning-bg: #fef3c7;
+            --danger: #ef4444;  --danger-bg: #fee2e2;
+            --shadow-sm: 0 1px 3px rgba(15,23,42,0.06);
+            --shadow-md: 0 4px 16px rgba(15,23,42,0.08);
+        }
+        body { background: var(--background); font-family: 'Inter', sans-serif; color: var(--primary); }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px; height: 100vh; background: var(--primary);
+            position: fixed; left: 0; top: 0;
+            display: flex; flex-direction: column; z-index: 1000;
+        }
+        .sidebar-brand {
+            padding: 28px 24px; display: flex; flex-direction: column;
+            align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .brand-logo {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white; border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 10px;
+        }
+        .sidebar-menu { flex-grow: 1; padding: 20px 12px; overflow-y: auto; }
+        .menu-category {
+            padding: 0 12px; font-size: 0.65rem; font-weight: 700;
+            color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px;
+            margin: 20px 0 8px;
+        }
+        .menu-item {
+            padding: 10px 16px; display: flex; align-items: center;
+            color: rgba(255,255,255,0.6); text-decoration: none; font-weight: 500;
+            font-size: 0.9rem; border-radius: 8px; margin-bottom: 4px; transition: all 0.2s;
+        }
+        .menu-item i { margin-right: 12px; font-size: 1.05rem; }
+        .menu-item:hover { background: rgba(255,255,255,0.08); color: white; }
+        .menu-item.active { background: rgba(37,99,235,0.3); color: white; font-weight: 600; }
+        .main-content { margin-left: 260px; }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
+            color: white; padding: 32px 40px;
+        }
+        .content-area { padding: 32px 40px; }
+
+        /* Stat Cards */
+        .stat-card {
+            background: var(--surface); border-radius: 16px; padding: 20px 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 10px 20px rgba(0,0,0,0.03);
+        }
+        .stat-icon {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        }
+
+        /* Table */
+        .data-card {
+            background: var(--surface); border-radius: 16px;
+            border: 1px solid var(--border-color); overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 10px 20px rgba(0,0,0,0.03);
+        }
+        .data-card-header {
+            padding: 20px 24px; border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .table th {
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.8px; color: var(--text-light); border-bottom: 1px solid var(--border-color);
+            padding: 14px 20px; background: var(--border-soft);
+        }
+        .table td { padding: 16px 20px; vertical-align: middle; border-bottom: 1px solid var(--border-soft); font-size: 0.9rem; }
+        .table tbody tr:last-child td { border-bottom: none; }
+        .table tbody tr:hover td { background: var(--border-soft); }
+        .badge-status { padding: 5px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+        .badge-pending { background: #fef3c7; color: #d97706; }
+        .badge-approved { background: #d1fae5; color: #059669; }
+        .badge-rejected { background: #fee2e2; color: #dc2626; }
+
+        .slot-chip {
+            background: var(--border-soft); border-radius: 8px;
+            padding: 4px 10px; font-size: 0.82rem; font-weight: 600; color: var(--primary);
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+        .slot-chip.new { background: var(--accent-soft); color: var(--accent); }
+
+        .btn-approve {
+            background: #d1fae5; color: #059669; border: 1px solid #a7f3d0;
+            border-radius: 8px; padding: 6px 14px; font-size: 0.82rem; font-weight: 700;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .btn-approve:hover { background: #059669; color: white; }
+        .btn-reject {
+            background: #fee2e2; color: #dc2626; border: 1px solid #fecaca;
+            border-radius: 8px; padding: 6px 14px; font-size: 0.82rem; font-weight: 700;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .btn-reject:hover { background: #dc2626; color: white; }
+
+        .filter-tab {
+            padding: 7px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+            border: none; cursor: pointer; transition: all 0.2s; background: var(--border-soft); color: var(--text-muted);
+        }
+        .filter-tab.active { background: var(--accent); color: white; }
+    
+        /* ── Unified Navy Sidebar ── */
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background: #0f172a !important;
+            position: fixed;
+            left: 0; top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            border-right: none;
+        }
+        .sidebar-brand { color: white !important; }
+        .sidebar-brand .brand-logo { background: linear-gradient(135deg, #2563eb, #1e3a8a) !important; }
+        .menu-category { color: rgba(255,255,255,0.3) !important; }
+        .menu-item {
+            color: rgba(255,255,255,0.6) !important;
+            border-radius: 8px;
+            margin-bottom: 2px;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(37,99,235,0.18) !important;
+            color: white !important;
+            border-left: 2px solid #2563eb !important;
+        }
+        .user-profile-section { background: rgba(255,255,255,0.07) !important; border-radius: 10px; }
+        .user-avatar { background: #2563eb !important; }
+        .user-name, .user-role { color: rgba(255,255,255,0.85) !important; }
+        .user-role { color: rgba(255,255,255,0.4) !important; }
+        .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.08) !important; }
+        .sidebar-footer a { color: rgba(255,255,255,0.5) !important; }
+        .sidebar-footer a:hover { color: #ef4444 !important; }
+        
+        /* ── Unified Card + Button styles ── */
+        .btn-primary, .btn-accent {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+        .btn-primary:hover { background: #1d4ed8 !important; border-color: #1d4ed8 !important; transform: translateY(-1px); }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+        }
+        </style>
+    <link rel="stylesheet" href="{% static 'css/campus.css' %}">
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">CS</div>
+        <div style="color: white; font-weight: 800; font-size: 1rem;">CampusSphere</div>
+        <div style="color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 2px;">Admin Console</div>
+    </div>
+    <div class="sidebar-menu">
+        <div class="menu-category">Management</div>
+        <a href="{% url 'admin_dashboard' %}" class="menu-item"><i class="bi bi-grid"></i>Overview</a>
+        <a href="{% url 'admin_leave_dashboard' %}" class="menu-item"><i class="bi bi-airplane"></i>Leave Management</a>
+        <a href="{% url 'admin_queue_dashboard' %}" class="menu-item"><i class="bi bi-clock-history"></i>Queue Booking</a>
+        <a href="{% url 'admin_lost_found_dashboard' %}" class="menu-item"><i class="bi bi-box-seam"></i>Lost & Found</a>
+        <a href="{% url 'admin_reschedule_dashboard' %}" class="menu-item active"><i class="bi bi-arrow-repeat"></i>Reschedule</a>
+    </div>
+    <div class="p-4 border-top" style="border-color: rgba(255,255,255,0.08) !important;">
+        <a href="{% url 'logout' %}" class="menu-item" style="padding: 0; color: rgba(255,255,255,0.4);">
+            <i class="bi bi-box-arrow-right"></i>Sign Out
+        </a>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <h2 class="fw-800 mb-1" style="font-size: 1.75rem; letter-spacing: -0.5px;">Reschedule Requests</h2>
+                <p class="mb-0" style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Review, approve or reject student reschedule requests</p>
+            </div>
+            <div class="d-flex gap-2">
+                <span class="badge bg-white bg-opacity-10 text-white fw-600 px-3 py-2" style="border-radius: 10px;">
+                    <i class="bi bi-arrow-repeat me-1"></i>{{ reschedules|length }} Total
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-area">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 mb-4" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Stats -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stat-icon" style="background: #fef3c7; color: #d97706;"><i class="bi bi-hourglass-split"></i></div>
+                        <span class="badge-status badge-pending" id="pendingCount">0 Pending</span>
+                    </div>
+                    <div style="font-size: 1.8rem; font-weight: 800;" id="pendingNum">—</div>
+                    <div class="text-muted small fw-500 mt-1">Awaiting Review</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stat-icon" style="background: #d1fae5; color: #059669;"><i class="bi bi-check-circle"></i></div>
+                        <span class="badge-status badge-approved" id="approvedCount">0 Approved</span>
+                    </div>
+                    <div style="font-size: 1.8rem; font-weight: 800;" id="approvedNum">—</div>
+                    <div class="text-muted small fw-500 mt-1">Rescheduled</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stat-icon" style="background: #fee2e2; color: #dc2626;"><i class="bi bi-x-circle"></i></div>
+                        <span class="badge-status badge-rejected" id="rejectedCount">0 Rejected</span>
+                    </div>
+                    <div style="font-size: 1.8rem; font-weight: 800;" id="rejectedNum">—</div>
+                    <div class="text-muted small fw-500 mt-1">Rejected</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stat-icon" style="background: var(--accent-soft); color: var(--accent);"><i class="bi bi-arrow-repeat"></i></div>
+                    </div>
+                    <div style="font-size: 1.8rem; font-weight: 800;">{{ reschedules|length }}</div>
+                    <div class="text-muted small fw-500 mt-1">Total Requests</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="d-flex gap-2 mb-4">
+            <button class="filter-tab active" onclick="filterTable('all', this)">All</button>
+            <button class="filter-tab" onclick="filterTable('pending', this)"><i class="bi bi-hourglass-split me-1"></i>Pending</button>
+            <button class="filter-tab" onclick="filterTable('approved', this)"><i class="bi bi-check-circle me-1"></i>Approved</button>
+            <button class="filter-tab" onclick="filterTable('rejected', this)"><i class="bi bi-x-circle me-1"></i>Rejected</button>
+        </div>
+
+        <!-- Data Table -->
+        <div class="data-card">
+            <div class="data-card-header">
+                <div>
+                    <h6 class="fw-700 mb-0">All Reschedule Requests</h6>
+                    <p class="text-muted small mb-0 mt-1">Click Approve or Reject to process each request.</p>
+                </div>
+            </div>
+
+            {% if not reschedules %}
+            <div class="text-center py-5 my-3">
+                <div style="width: 64px; height: 64px; background: var(--border-soft); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                    <i class="bi bi-arrow-repeat" style="font-size: 1.8rem; color: var(--text-light);"></i>
+                </div>
+                <h6 class="fw-700 text-muted">No Reschedule Requests</h6>
+                <p class="text-muted small">No requests have been submitted yet.</p>
+            </div>
+            {% else %}
+            <div class="table-responsive">
+                <table class="table mb-0" id="rescheduleTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student</th>
+                            <th>Service</th>
+                            <th>Current Slot</th>
+                            <th>Requested Slot</th>
+                            <th>Reason</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in reschedules %}
+                        <tr class="row-filter" data-status="{{ r.status|lower }}">
+                            <td class="text-muted fw-600 small">#{{ r.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width:34px;height:34px;background:var(--accent-soft);color:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;">
+                                        {{ r.student_name|make_list|first|upper }}
+                                    </div>
+                                    <span class="fw-600" style="text-transform:capitalize;">{{ r.student_name }}</span>
+                                </div>
+                            </td>
+                            <td><span class="fw-600">{{ r.booking.service_type }}</span><br><span class="text-muted small">Booking #{{ r.booking.id }}</span></td>
+                            <td>
+                                <span class="slot-chip"><i class="bi bi-clock"></i>{{ r.old_slot_time }}</span>
+                            </td>
+                            <td>
+                                <span class="slot-chip new"><i class="bi bi-arrow-right"></i>{{ r.requested_slot_time }}</span>
+                            </td>
+                            <td>
+                                <span style="font-size:0.85rem;color:var(--text-muted);max-width:180px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ r.reason }}">
+                                    {{ r.reason|truncatechars:60 }}
+                                </span>
+                            </td>
+                            <td class="text-muted small">{{ r.created_at|date:"M d, Y" }}<br>{{ r.created_at|time:"h:i A" }}</td>
+                            <td>
+                                <span class="badge-status 
+                                    {% if r.status == 'Pending' %}badge-pending
+                                    {% elif r.status == 'Approved' %}badge-approved
+                                    {% else %}badge-rejected{% endif %}">
+                                    {{ r.status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if r.status == 'Pending' %}
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'approve_reschedule' r.id %}" class="btn-approve">
+                                        <i class="bi bi-check-lg me-1"></i>Approve
+                                    </a>
+                                    <a href="{% url 'reject_reschedule' r.id %}" class="btn-reject">
+                                        <i class="bi bi-x-lg me-1"></i>Reject
+                                    </a>
+                                </div>
+                                {% elif r.status == 'Approved' %}
+                                    <span class="text-success small fw-600"><i class="bi bi-check-circle-fill me-1"></i>Processed</span>
+                                {% else %}
+                                    <span class="text-danger small fw-600"><i class="bi bi-x-circle-fill me-1"></i>Declined</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Count stats
+    const rows = document.querySelectorAll('.row-filter');
+    let pending = 0, approved = 0, rejected = 0;
+    rows.forEach(r => {
+        const s = r.dataset.status;
+        if (s === 'pending') pending++;
+        else if (s === 'approved') approved++;
+        else if (s === 'rejected') rejected++;
+    });
+    document.getElementById('pendingNum').textContent = pending;
+    document.getElementById('approvedNum').textContent = approved;
+    document.getElementById('rejectedNum').textContent = rejected;
+    document.getElementById('pendingCount').textContent = pending + ' Pending';
+    document.getElementById('approvedCount').textContent = approved + ' Approved';
+    document.getElementById('rejectedCount').textContent = rejected + ' Rejected';
+
+    // Filter table
+    function filterTable(status, btn) {
+        document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        rows.forEach(row => {
+            if (status === 'all' || row.dataset.status === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+</body>
+</html>

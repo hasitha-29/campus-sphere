@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Timetable Generator - CampusSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-mid: #1e293b;
+            --primary-light: #1e3a8a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: #eff6ff;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-soft: #f1f5f9;
+            --text-main: #0f172a;
+            --text-mid: #475569;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --success: #10b981; --success-bg: #d1fae5;
+            --warning: #f59e0b; --warning-bg: #fef3c7;
+            --danger: #ef4444;  --danger-bg: #fee2e2;
+            --shadow-sm: 0 1px 3px rgba(15,23,42,0.06);
+            --shadow-md: 0 4px 16px rgba(15,23,42,0.08);
+        }
+        body { background: var(--background); font-family: 'Inter', sans-serif; color: var(--primary); }
+        .sidebar { width: 260px; height: 100vh; background: var(--surface); position: fixed; border-right: 1px solid var(--border-color); padding: 20px 0; }
+        .main-content { margin-left: 260px; padding: 32px; }
+        .card-custom { background: var(--surface); border-radius: 12px; border: 1px solid var(--border-color); padding: 20px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .table th { background: var(--border-soft); font-size: 0.8rem; text-transform: uppercase; }
+        .badge-slot { background: var(--accent); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; }
+        .day-header { background: #1e293b; color: white; padding: 8px 12px; border-radius: 6px; font-weight: bold; margin-top: 15px; margin-bottom: 10px; }
+    
+        /* ── Unified Navy Sidebar ── */
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background: #0f172a !important;
+            position: fixed;
+            left: 0; top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            border-right: none;
+        }
+        .sidebar-brand { color: white !important; }
+        .sidebar-brand .brand-logo { background: linear-gradient(135deg, #2563eb, #1e3a8a) !important; }
+        .menu-category { color: rgba(255,255,255,0.3) !important; }
+        .menu-item {
+            color: rgba(255,255,255,0.6) !important;
+            border-radius: 8px;
+            margin-bottom: 2px;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(37,99,235,0.18) !important;
+            color: white !important;
+            border-left: 2px solid #2563eb !important;
+        }
+        .user-profile-section { background: rgba(255,255,255,0.07) !important; border-radius: 10px; }
+        .user-avatar { background: #2563eb !important; }
+        .user-name, .user-role { color: rgba(255,255,255,0.85) !important; }
+        .user-role { color: rgba(255,255,255,0.4) !important; }
+        .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.08) !important; }
+        .sidebar-footer a { color: rgba(255,255,255,0.5) !important; }
+        .sidebar-footer a:hover { color: #ef4444 !important; }
+        
+        /* ── Unified Card + Button styles ── */
+        .btn-primary, .btn-accent {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+        .btn-primary:hover { background: #1d4ed8 !important; border-color: #1d4ed8 !important; transform: translateY(-1px); }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+        }
+        </style>
+    <link rel="stylesheet" href="{% static 'css/campus.css' %}">
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="px-4 mb-4 fw-bold fs-5 text-primary">CampusSphere</div>
+    <div class="px-3">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-light w-100 text-start mb-2"><i class="bi bi-grid me-2"></i>Dashboard</a>
+        <a href="{% url 'admin_timetable_dashboard' %}" class="btn btn-primary w-100 text-start mb-2"><i class="bi bi-calendar3 me-2"></i>Timetable Generator</a>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Weekly Timetable Generator</h2>
+        <div>
+            <a href="{% url 'generate_timetable' %}" class="btn btn-success fw-bold px-4 py-2"><i class="bi bi-magic me-2"></i>Generate New Timetable</a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for m in messages %}
+            <div class="alert alert-{{ m.tags }}">{{ m }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <!-- Subjects Form -->
+        <div class="col-md-4">
+            <div class="card-custom">
+                <h5 class="fw-bold mb-3">Add Subject & Faculty</h5>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_subject">
+                    <input type="text" name="subject_name" class="form-control mb-2" placeholder="Subject Name (e.g. Physics)" required>
+                    <input type="text" name="faculty_name" class="form-control mb-2" placeholder="Faculty Name (e.g. Dr. Smith)" required>
+                    <input type="number" name="weekly_hours" class="form-control mb-3" placeholder="Weekly Hours (e.g. 3)" value="3" required>
+                    <button class="btn btn-primary btn-sm w-100">Add Subject</button>
+                </form>
+                <hr>
+                <div style="max-height: 200px; overflow-y: auto;">
+                    <ul class="list-group list-group-flush">
+                        {% for s in subjects %}
+                            <li class="list-group-item px-0 py-1" style="font-size: 0.9rem;">
+                                <strong>{{ s.subject_name }}</strong> ({{ s.faculty_name }}) - {{ s.weekly_hours }} hrs
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rooms Form -->
+        <div class="col-md-4">
+            <div class="card-custom">
+                <h5 class="fw-bold mb-3">Add Room</h5>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_room">
+                    <input type="text" name="room_name" class="form-control mb-2" placeholder="Room Name (e.g. 101A)" required>
+                    <input type="number" name="capacity" class="form-control mb-3" placeholder="Capacity (e.g. 60)" value="60" required>
+                    <button class="btn btn-primary btn-sm w-100">Add Room</button>
+                </form>
+                <hr>
+                <div style="max-height: 200px; overflow-y: auto;">
+                    <ul class="list-group list-group-flush">
+                        {% for r in rooms %}
+                            <li class="list-group-item px-0 py-1" style="font-size: 0.9rem;">
+                                <strong>{{ r.room_name }}</strong> (Cap: {{ r.capacity }})
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slots Form -->
+        <div class="col-md-4">
+            <div class="card-custom">
+                <h5 class="fw-bold mb-3">Add Time Slot</h5>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_slot">
+                    <select name="day" class="form-select mb-2" required>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                    </select>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6"><input type="time" name="start_time" class="form-control" required></div>
+                        <div class="col-6"><input type="time" name="end_time" class="form-control" required></div>
+                    </div>
+                    <button class="btn btn-primary btn-sm w-100">Add Time Slot</button>
+                </form>
+                <hr>
+                <div style="max-height: 200px; overflow-y: auto;">
+                    <ul class="list-group list-group-flush">
+                        {% for sl in slots %}
+                            <li class="list-group-item px-0 py-1" style="font-size: 0.85rem;">
+                                <strong>{{ sl.day }}</strong> {{ sl.start_time|time:"H:i" }} - {{ sl.end_time|time:"H:i" }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generated Timetable View -->
+    <div class="card-custom mt-2">
+        <h4 class="fw-bold mb-4"><i class="bi bi-grid-3x3 me-2 text-primary"></i>Current Generated Timetable</h4>
+        
+        {% if not timetable %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-calendar-x fs-1"></i>
+                <p class="mt-2">No timetable generated yet. Add your constraints and click "Generate New Timetable".</p>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Time</th>
+                            <th>Subject</th>
+                            <th>Faculty</th>
+                            <th>Room</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in timetable|dictsort:"day" %}
+                        <tr>
+                            <td class="fw-bold">{{ t.day }}</td>
+                            <td><span class="badge-slot">{{ t.start_time|time:"H:i" }} - {{ t.end_time|time:"H:i" }}</span></td>
+                            <td class="fw-bold text-primary">{{ t.subject.subject_name }}</td>
+                            <td class="text-muted"><i class="bi bi-person me-1"></i>{{ t.faculty_name }}</td>
+                            <td class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ t.room_name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+</body>
+</html>

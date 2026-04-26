@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yearly Academic Plan – CampusSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/campus.css' %}">
+    <style>
+        .tt { width:100%; border-collapse:collapse; font-size:0.78rem; }
+        .tt thead th {
+            background:#f1f5f9; color:var(--text-muted);
+            font-size:0.67rem; font-weight:600; letter-spacing:.5px; text-transform:uppercase;
+            padding:10px 8px; border-bottom:1px solid var(--border); text-align:center; white-space:nowrap;
+        }
+        .tt thead th:first-child { text-align:left; min-width:145px; padding-left:16px; }
+        .tt tbody tr { border-bottom:1px solid var(--border-soft); }
+        .tt tbody tr:last-child { border-bottom:none; }
+        .tt tbody tr:hover td { background:#fafbfe; }
+        .tt td { padding:7px 7px; vertical-align:middle; }
+        .tt td:first-child { font-weight:600; font-size:0.74rem; color:var(--text-mid); background:#f8fafc; border-right:1px solid var(--border-soft); white-space:nowrap; padding-left:14px; }
+
+        .cell { border-radius:6px; padding:5px 8px; text-align:center; line-height:1.3; }
+        .c-ok  { background:var(--green-bg); color:#065f46; }
+        .c-hol { background:var(--red-bg);   color:#991b1b; }
+        .c-mk  { background:var(--amber-bg); color:#92400e; }
+        .c-sub { font-size:0.73rem; font-weight:600; }
+        .c-tag { font-size:0.62rem; opacity:.7; margin-top:1px; }
+        .c-empty { color:#c8d6e5; font-size:0.76rem; }
+
+        .legend { display:flex; gap:16px; flex-wrap:wrap; }
+        .lg { display:flex; align-items:center; gap:5px; font-size:0.73rem; font-weight:500; color:var(--text-mid); }
+        .ld { width:10px; height:10px; border-radius:2px; }
+
+        .empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:52px 24px; text-align:center; }
+        .empty i { font-size:2rem; color:var(--text-light); margin-bottom:12px; }
+        .empty p { font-size:0.83rem; color:var(--text-muted); margin:0; }
+    
+        /* ── Unified Navy Topbar (Student) ── */
+        .topbar, .navbar, header.topbar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important;
+            border-bottom: none !important;
+        }
+        .topbar .navbar-brand, .topbar h4, .topbar .brand-name { color: white !important; }
+        .topbar .btn-outline-secondary, .topbar .btn { border-color: rgba(255,255,255,0.2) !important; color: rgba(255,255,255,0.85) !important; }
+        .topbar .btn:hover { background: rgba(255,255,255,0.15) !important; color: white !important; }
+        
+        /* ── Unified Card + Button styles ── */
+        .btn-primary, .btn-accent {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+        .btn-primary:hover { background: #1d4ed8 !important; border-color: #1d4ed8 !important; transform: translateY(-1px); }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+        }
+        </style>
+</head>
+<body>
+
+<!-- Topbar — matches login gradient -->
+<div class="cs-topbar">
+    <div class="cs-topbar-brand">
+        <div class="cs-topbar-logo">CS</div>
+        <span class="cs-topbar-name">CampusSphere</span>
+        <span class="cs-topbar-badge">Student</span>
+    </div>
+    <a href="{% url 'student_dashboard' %}" class="cs-btn-topbar">
+        <i class="bi bi-grid"></i> Dashboard
+    </a>
+</div>
+
+<!-- Breadcrumb -->
+<div class="cs-bc">
+    <a href="{% url 'student_dashboard' %}">Home</a>
+    <span class="sep">/</span>
+    <span class="cur">Yearly Academic Plan</span>
+</div>
+
+<!-- Content -->
+<div class="cs-wrap">
+
+    <h1 class="cs-page-title">Yearly Academic Plan</h1>
+    <p class="cs-page-sub">Your complete year schedule — including holiday cancellations and makeup classes.</p>
+
+    <div class="cs-card">
+        <div class="cs-card-header">
+            <h6><i class="bi bi-calendar-check me-2 text-primary"></i>Full Year Schedule</h6>
+            <div class="legend">
+                <div class="lg"><div class="ld" style="background:var(--green);"></div>Scheduled</div>
+                <div class="lg"><div class="ld" style="background:var(--red);"></div>Holiday</div>
+                <div class="lg"><div class="ld" style="background:var(--amber);"></div>Makeup</div>
+            </div>
+        </div>
+
+        {% if not rows %}
+        <div class="empty">
+            <i class="bi bi-calendar-x"></i>
+            <p>Your yearly timetable hasn't been published yet.<br>Check back after your admin generates the plan.</p>
+        </div>
+        {% else %}
+        <div style="overflow-x:auto;">
+            <table class="tt">
+                <thead>
+                    <tr>
+                        <th>Date / Day</th>
+                        {% for slot in slots %}<th>{{ slot }}</th>{% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td>{{ row.date }}</td>
+                        {% for cell in row.cells %}
+                        <td>
+                            {% if cell %}
+                            <div class="cell {% if cell.status == 'Scheduled' %}c-ok{% elif cell.status == 'Holiday' %}c-hol{% else %}c-mk{% endif %}">
+                                <div class="c-sub">{{ cell.subject_name }}</div>
+                                <div class="c-tag">
+                                    {% if cell.status == 'Scheduled' %}✓ On schedule
+                                    {% elif cell.status == 'Holiday' %}✕ Holiday
+                                    {% else %}↻ Makeup{% endif %}
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="c-empty">—</span>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

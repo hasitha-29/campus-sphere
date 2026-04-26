@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CampusSphere</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-mid: #1e293b;
+            --primary-light: #1e3a8a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: #eff6ff;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-soft: #f1f5f9;
+            --text-main: #0f172a;
+            --text-mid: #475569;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --success: #10b981; --success-bg: #d1fae5;
+            --warning: #f59e0b; --warning-bg: #fef3c7;
+            --danger: #ef4444;  --danger-bg: #fee2e2;
+            --shadow-sm: 0 1px 3px rgba(15,23,42,0.06);
+            --shadow-md: 0 4px 16px rgba(15,23,42,0.08);
+        }
+
+        body {
+            background-color: var(--background);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background-color: var(--surface);
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 32px 24px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: -0.5px;
+            text-align: center;
+        }
+        
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-profile-section {
+            padding: 16px 24px;
+            margin: 0 12px;
+            border-radius: 12px;
+            background-color: var(--border-soft);
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--danger); /* Different color for admin */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 12px;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-menu { flex-grow: 1; padding: 20px 12px; overflow-y: auto; }
+        
+        .menu-category {
+            padding: 0 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            margin-top: 24px;
+        }
+
+        .menu-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+        }
+        .menu-item i { margin-right: 12px; font-size: 1.1rem; color: var(--text-light); transition: all 0.2s; }
+        
+        .menu-item:hover {
+            background-color: var(--border-soft);
+            color: var(--primary);
+        }
+        .menu-item:hover i { color: var(--primary); }
+        
+        .menu-item.active {
+            background-color: var(--accent-soft);
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .menu-item.active i { color: var(--accent); }
+
+        /* Main Content */
+        .main-content { margin-left: 260px; padding: 32px 40px; }
+        
+        .page-header h2 {
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            font-size: 1.75rem;
+        }
+
+        /* SaaS Premium Cards */
+        .premium-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            height: 100%;
+        }
+
+        /* Stat Cards */
+        .stat-card-inner {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+        .stat-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        .icon-blue { background-color: var(--accent-soft); color: var(--accent); }
+        .icon-slate { background-color: var(--border-soft); color: var(--primary); }
+        .icon-orange { background-color: var(--warning-bg); color: var(--warning); }
+        .icon-green { background-color: var(--success-bg); color: var(--success); }
+        
+        .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary); line-height: 1.1; margin-top: 16px; letter-spacing: -0.5px; }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
+
+        /* Quick Action Cards */
+        .action-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        .action-card:hover {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+            color: var(--accent);
+        }
+        .action-card i { font-size: 1.2rem; color: var(--text-light); margin-right: 12px; }
+        .action-card:hover i { color: var(--accent); }
+
+        /* Lists & Tables */
+        .panel-title { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin-bottom: 24px; letter-spacing: -0.2px;}
+        
+        .list-row { 
+            padding: 14px 0; 
+            border-bottom: 1px solid var(--border-soft); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .list-row:last-child { border-bottom: none; padding-bottom: 0; }
+        
+        .subject-name { font-weight: 600; font-size: 0.9rem; color: var(--primary); }
+        
+        /* Premium Badges */
+        .badge-premium {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .badge-success { background-color: var(--success-bg); color: var(--success); }
+        .badge-warning { background-color: var(--warning-bg); color: var(--warning); }
+        .badge-danger { background-color: var(--danger-bg); color: var(--danger); }
+        .badge-neutral { background-color: var(--border-soft); color: var(--text-muted); }
+    
+        /* ── Unified Navy Sidebar ── */
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background: #0f172a !important;
+            position: fixed;
+            left: 0; top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            border-right: none;
+        }
+        .sidebar-brand { color: white !important; }
+        .sidebar-brand .brand-logo { background: linear-gradient(135deg, #2563eb, #1e3a8a) !important; }
+        .menu-category { color: rgba(255,255,255,0.3) !important; }
+        .menu-item {
+            color: rgba(255,255,255,0.6) !important;
+            border-radius: 8px;
+            margin-bottom: 2px;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(37,99,235,0.18) !important;
+            color: white !important;
+            border-left: 2px solid #2563eb !important;
+        }
+        .user-profile-section { background: rgba(255,255,255,0.07) !important; border-radius: 10px; }
+        .user-avatar { background: #2563eb !important; }
+        .user-name, .user-role { color: rgba(255,255,255,0.85) !important; }
+        .user-role { color: rgba(255,255,255,0.4) !important; }
+        .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.08) !important; }
+        .sidebar-footer a { color: rgba(255,255,255,0.5) !important; }
+        .sidebar-footer a:hover { color: #ef4444 !important; }
+        
+        /* ── Unified Card + Button styles ── */
+        .btn-primary, .btn-accent {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+        .btn-primary:hover { background: #1d4ed8 !important; border-color: #1d4ed8 !important; transform: translateY(-1px); }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+        }
+        </style>
+    <link rel="stylesheet" href="{% static 'css/campus.css' %}">
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">CS</div>
+        CampusSphere
+    </div>
+    
+    <div class="user-profile-section">
+        <div class="user-avatar">{{ user.username|make_list|first|upper }}</div>
+        <div style="overflow: hidden;">
+            <div class="fw-bold text-truncate" style="color: #ffffff; font-size: 0.88rem; text-transform: capitalize;">{{ user.username }}</div>
+            <div style="font-size: 0.72rem; color: rgba(255,255,255,0.45); font-weight: 500;">Admin Console</div>
+        </div>
+    </div>
+    
+    <div class="sidebar-menu">
+        <div class="menu-category">Overview</div>
+        <a href="{% url 'admin_dashboard' %}" class="menu-item active"><i class="bi bi-grid"></i> Dashboard</a>
+        <a href="{% url 'admin_profile' %}" class="menu-item"><i class="bi bi-person-circle"></i> Admin Profile</a>
+        
+        <div class="menu-category">Applications</div>
+        <a href="{% url 'admin_leave_dashboard' %}" class="menu-item"><i class="bi bi-airplane"></i> Leave Management</a>
+        <a href="{% url 'admin_queue_dashboard' %}" class="menu-item"><i class="bi bi-clock-history"></i> Queue Booking</a>
+        <a href="{% url 'admin_lost_found_dashboard' %}" class="menu-item"><i class="bi bi-box-seam"></i> Lost & Found</a>
+
+        <a href="{% url 'holiday_compensation_dashboard' %}" class="menu-item"><i class="bi bi-calendar-event"></i> Holiday Compensation</a>
+        
+        <div class="menu-category">Settings</div>
+        <a href="{% url 'admin_settings' %}" class="menu-item"><i class="bi bi-gear"></i> System Settings</a>
+    </div>
+    
+    <div class="p-4 border-top">
+        <a href="{% url 'logout' %}" class="menu-item" style="color: var(--text-muted); padding: 0;"><i class="bi bi-box-arrow-right"></i> Sign Out</a>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    
+    <!-- Top Header -->
+    <div class="d-flex justify-content-between align-items-end mb-5 page-header">
+        <div>
+            <h2 class="mb-1">Admin Dashboard</h2>
+            <p class="text-muted mb-0 fw-medium" style="font-size: 0.95rem;">Welcome back, <span style="text-transform: capitalize;">{{ user.username }}</span>. Here's what's happening across the campus today.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-light border" style="width: 42px; height: 42px; border-radius: 10px; color: var(--text-muted);"><i class="bi bi-search"></i></button>
+            <button class="btn btn-light border position-relative" style="width: 42px; height: 42px; border-radius: 10px; color: var(--text-muted);">
+                <i class="bi bi-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="margin-top: 10px; margin-left: -10px;">
+                    <span class="visually-hidden">New alerts</span>
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="premium-card">
+                <div class="stat-card-inner">
+                    <div class="stat-icon-wrapper icon-blue"><i class="bi bi-people"></i></div>
+                    <span class="badge badge-premium badge-success"><i class="bi bi-arrow-up-short"></i> 5%</span>
+                </div>
+                <div class="stat-value">2,450</div>
+                <div class="stat-label">Active Students</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="premium-card">
+                <div class="stat-card-inner">
+                    <div class="stat-icon-wrapper icon-orange"><i class="bi bi-clock-history"></i></div>
+                    <span class="badge badge-premium badge-warning">Needs Review</span>
+                </div>
+                <div class="stat-value">12</div>
+                <div class="stat-label">Pending Queues/Leaves</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="premium-card">
+                <div class="stat-card-inner">
+                    <div class="stat-icon-wrapper icon-slate"><i class="bi bi-box-seam"></i></div>
+                </div>
+                <div class="stat-value">8</div>
+                <div class="stat-label">Open Lost & Found Items</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="premium-card">
+                <div class="stat-card-inner">
+                    <div class="stat-icon-wrapper icon-green"><i class="bi bi-check-circle"></i></div>
+                    <span class="badge badge-premium badge-neutral">Today</span>
+                </div>
+                <div class="stat-value">98%</div>
+                <div class="stat-label">System Uptime</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <a href="{% url 'admin_leave_dashboard' %}" class="action-card">
+                <i class="bi bi-airplane"></i> Manage Leaves
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'admin_queue_dashboard' %}" class="action-card">
+                <i class="bi bi-clock-history"></i> Manage Queue Bookings
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'holiday_compensation_dashboard' %}" class="action-card">
+                <i class="bi bi-calendar-event"></i> Holiday Compensation
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'admin_lost_found_dashboard' %}" class="action-card">
+                <i class="bi bi-box-seam"></i> View Lost & Found
+            </a>
+        </div>
+    </div>
+
+    <!-- Charts & Lists Row -->
+    <div class="row g-4">
+        <!-- Recent Activity -->
+        <div class="col-md-6">
+            <div class="premium-card">
+                <div class="panel-title d-flex justify-content-between">
+                    Recent System Alerts
+                    <i class="bi bi-three-dots text-muted"></i>
+                </div>
+                
+                <div class="list-row pt-0">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-circle text-warning me-3 fs-5"></i>
+                        <div>
+                            <div class="subject-name">New leave requests pending</div>
+                            <div class="text-muted small">5 new requests from CS Department</div>
+                        </div>
+                    </div>
+                    <span class="text-muted small">2m ago</span>
+                </div>
+                <div class="list-row">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-check-circle text-success me-3 fs-5"></i>
+                        <div>
+                            <div class="subject-name">Database backup completed</div>
+                            <div class="text-muted small">Daily automated backup</div>
+                        </div>
+                    </div>
+                    <span class="text-muted small">1h ago</span>
+                </div>
+                <div class="list-row border-0">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-box-seam text-primary me-3 fs-5"></i>
+                        <div>
+                            <div class="subject-name">New Lost Item reported</div>
+                            <div class="text-muted small">"Apple AirPods" reported in Library</div>
+                        </div>
+                    </div>
+                    <span class="text-muted small">3h ago</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Summary -->
+        <div class="col-md-6">
+            <div class="premium-card">
+                <div class="panel-title d-flex justify-content-between">
+                    Module Health
+                    <i class="bi bi-three-dots text-muted"></i>
+                </div>
+                
+                <div class="list-row pt-0 align-items-center">
+                    <div>
+                        <div class="subject-name">Queue Booking System</div>
+                        <div class="text-muted small mt-1">Normal load</div>
+                    </div>
+                    <span class="badge badge-premium badge-success">Online</span>
+                </div>
+                
+                <div class="list-row align-items-center">
+                    <div>
+                        <div class="subject-name">Leave Management</div>
+                        <div class="text-muted small mt-1">Processing queue: low</div>
+                    </div>
+                    <span class="badge badge-premium badge-success">Online</span>
+                </div>
+
+                <div class="list-row border-0 align-items-center">
+                    <div>
+                        <div class="subject-name">Lost & Found matching</div>
+                        <div class="text-muted small mt-1">Background worker active</div>
+                    </div>
+                    <span class="badge badge-premium badge-success">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

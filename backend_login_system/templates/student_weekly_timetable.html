@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Weekly Timetable - CampusSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-mid: #1e293b;
+            --primary-light: #1e3a8a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: #eff6ff;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-soft: #f1f5f9;
+            --text-main: #0f172a;
+            --text-mid: #475569;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --success: #10b981; --success-bg: #d1fae5;
+            --warning: #f59e0b; --warning-bg: #fef3c7;
+            --danger: #ef4444;  --danger-bg: #fee2e2;
+            --shadow-sm: 0 1px 3px rgba(15,23,42,0.06);
+            --shadow-md: 0 4px 16px rgba(15,23,42,0.08);
+        }
+        body { background: var(--background); font-family: 'Inter', sans-serif; color: var(--primary); }
+        .topbar { background: var(--surface); border-bottom: 1px solid var(--border-color); padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        .page-hero { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; padding: 40px 0 50px; }
+        .data-card { background: var(--surface); border-radius: 16px; border: 1px solid var(--border-color); padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 10px 20px rgba(0,0,0,0.03); margin-top: -20px; }
+        
+        .day-column { background: var(--border-soft); border-radius: 12px; padding: 16px; height: 100%; min-height: 400px; }
+        .day-header { font-weight: 800; font-size: 1.1rem; color: var(--primary); border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+        .class-card { background: white; border-radius: 10px; padding: 12px; margin-bottom: 12px; border-left: 4px solid var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: transform 0.2s; cursor: default; }
+        .class-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+        .class-time { font-size: 0.75rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; display: flex; align-items: center; }
+        .class-subject { font-weight: 800; font-size: 0.95rem; line-height: 1.2; margin-bottom: 8px; color: var(--primary); }
+        .class-meta { font-size: 0.75rem; color: #64748b; display: flex; justify-content: space-between; }
+    
+        /* ── Unified Navy Topbar (Student) ── */
+        .topbar, .navbar, header.topbar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important;
+            border-bottom: none !important;
+        }
+        .topbar .navbar-brand, .topbar h4, .topbar .brand-name { color: white !important; }
+        .topbar .btn-outline-secondary, .topbar .btn { border-color: rgba(255,255,255,0.2) !important; color: rgba(255,255,255,0.85) !important; }
+        .topbar .btn:hover { background: rgba(255,255,255,0.15) !important; color: white !important; }
+        
+        /* ── Unified Card + Button styles ── */
+        .btn-primary, .btn-accent {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+        .btn-primary:hover { background: #1d4ed8 !important; border-color: #1d4ed8 !important; transform: translateY(-1px); }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+        }
+        </style>
+    <link rel="stylesheet" href="{% static 'css/campus.css' %}">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="d-flex align-items-center">
+        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; margin-right: 10px;">CS</div>
+        <span style="font-size: 1.1rem; font-weight: 800;">CampusSphere</span>
+    </div>
+    <div>
+        <a href="{% url 'student_dashboard' %}" class="btn btn-outline-dark btn-sm fw-bold px-3">Dashboard</a>
+    </div>
+</div>
+
+<div class="page-hero">
+    <div class="container">
+        <h1 class="fw-800 mb-1" style="font-size: 2rem;">My Weekly Timetable</h1>
+        <p class="mb-0" style="color: rgba(255,255,255,0.7);">Your automatically generated schedule for the week.</p>
+    </div>
+</div>
+
+<div class="container-fluid py-4 px-4">
+    <div class="data-card">
+        <div class="row g-3">
+            {% for day in days %}
+            <div class="col">
+                <div class="day-column">
+                    <div class="day-header">{{ day }}</div>
+                    
+                    {% with daily_classes=schedule|default_if_none:""|dictsort:"" %}
+                        {% for t in schedule.values %}
+                        {% endfor %}
+                    {% endwith %}
+                    
+                    <!-- Loop through dictionary using custom approach because dict lookup in template needs a filter, or we pass items -->
+                    <!-- Wait, passing items directly is easier if we iterate over schedule.items or we just passed it directly. -->
+                    
+                    {% for d, classes in schedule.items %}
+                        {% if d == day %}
+                            {% if not classes %}
+                                <div class="text-center py-4 text-muted small"><i class="bi bi-cup-hot mb-2 d-block fs-4"></i>Free Day</div>
+                            {% else %}
+                                {% for c in classes %}
+                                <div class="class-card">
+                                    <div class="class-time"><i class="bi bi-clock me-1"></i>{{ c.start_time|time:"H:i" }} - {{ c.end_time|time:"H:i" }}</div>
+                                    <div class="class-subject">{{ c.subject.subject_name }}</div>
+                                    <div class="class-meta">
+                                        <span><i class="bi bi-person me-1"></i>{{ c.faculty_name }}</span>
+                                        <span class="fw-bold text-dark"><i class="bi bi-geo-alt me-1"></i>{{ c.room_name }}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

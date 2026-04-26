@@ -1,0 +1,350 @@
+/* Google Fonts - Inter (for About page) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Google Fonts - Poppins (for Login/Register pages ONLY) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+/* ============================================
+   LOGIN PAGE SCOPED STYLES
+   Applied ONLY when <body class="login-page">
+   Does NOT affect about.html
+   ============================================ */
+body.login-page {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #0a2540 0%, #1a4f8b 60%, #0dcaf0 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+body.login-page *,
+body.login-page *::before,
+body.login-page *::after {
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body.login-page .login-wrapper {
+    width: 100%;
+    padding: 5rem 0 2rem;
+}
+
+body.login-page .login-card {
+    border: none;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 2rem 4rem rgba(0, 0, 0, 0.3);
+}
+
+body.login-page .login-card .card-header {
+    background: linear-gradient(135deg, #0a2540, #1a4f8b);
+    padding: 2.5rem 2rem;
+    border: none;
+}
+
+body.login-page .login-card .card-body {
+    padding: 2.5rem;
+}
+
+body.login-page .form-control,
+body.login-page .form-select {
+    border-radius: 0.75rem;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-family: "Poppins", sans-serif;
+    transition: all 0.3s ease;
+}
+
+body.login-page .form-control:focus,
+body.login-page .form-select:focus {
+    border-color: #0a2540;
+    box-shadow: 0 0 0 0.2rem rgba(10, 37, 64, 0.15);
+}
+
+body.login-page .input-group-text {
+    border-radius: 0.75rem 0 0 0.75rem;
+    border: 2px solid #e9ecef;
+    border-right: none;
+    background-color: #f8f9fa;
+}
+
+body.login-page .input-group .form-control,
+body.login-page .input-group .form-select {
+    border-radius: 0 0.75rem 0.75rem 0;
+    border-left: none;
+}
+
+body.login-page .input-group .form-control:focus,
+body.login-page .input-group .form-select:focus {
+    border-color: #0a2540;
+    box-shadow: none;
+}
+
+body.login-page .input-group:focus-within .input-group-text {
+    border-color: #0a2540;
+}
+
+body.login-page .btn-login {
+    background: linear-gradient(135deg, #0a2540, #1a4f8b);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.85rem;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+body.login-page .btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.75rem 1.5rem rgba(10, 37, 64, 0.3);
+    color: white;
+    background: linear-gradient(135deg, #1a4f8b, #0a2540);
+}
+
+/* All buttons inside login page */
+body.login-page button {
+    width: 100%;
+    padding: 12px;
+    background: #7494ec;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 500;
+    margin-bottom: 20px;
+    transition: 0.5s;
+}
+
+body.login-page button:hover {
+    background: #6884d3;
+}
+
+body.login-page p {
+    font-size: 14.5px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+body.login-page p a {
+    color: #7494ec;
+    text-decoration: none;
+}
+
+body.login-page p a:hover {
+    text-decoration: underline;
+}
+
+body.login-page .password-toggle {
+    cursor: pointer;
+    border: 2px solid #e9ecef;
+    border-left: none;
+    border-radius: 0 0.75rem 0.75rem 0;
+    background: #f8f9fa;
+    transition: all 0.2s;
+}
+
+body.login-page .password-toggle:hover {
+    background-color: #e9ecef;
+}
+
+body.login-page .nav-back-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+body.login-page .nav-back-link:hover {
+    color: white;
+}
+
+body.login-page .register-link {
+    color: #0a2540;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+body.login-page .register-link:hover {
+    color: #1a4f8b;
+    text-decoration: underline;
+}
+
+body {
+    background-color: #f4f7f6;
+    /* More premium light background */
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+/* Navbar enhancement */
+.navbar {
+    background: rgba(10, 37, 64, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Hero Banner */
+.hero-banner {
+    background: linear-gradient(rgba(10, 25, 47, 0.7), rgba(10, 25, 47, 0.8)), url('images/banner.jpeg') center/cover no-repeat;
+    height: 100vh;
+    min-height: 650px;
+    margin-bottom: 4rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-text {
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.hero-content {
+    animation: fadeInDown 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* About Section Full Height */
+#about {
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Hover Effects for Cards */
+.hover-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.hover-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, .12) !important;
+    border-color: rgba(10, 37, 64, 0.3) !important;
+}
+
+/* Icon styles */
+.feature-icon {
+    font-size: 3rem;
+    background: linear-gradient(135deg, #0a2540, #1a4f8b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.hover-card:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+/* Profile Image Placeholder styling */
+.team-img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 4rem;
+    border: 5px solid #fff;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, .1);
+    transition: transform 0.4s ease;
+}
+
+.hover-card:hover .team-img {
+    transform: scale(1.05);
+}
+
+/* Badges styling */
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Navy Blue Theme Colors */
+.text-navy {
+    color: #0a2540 !important;
+}
+
+.bg-navy {
+    background-color: #0a2540 !important;
+    color: #ffffff;
+}
+
+.btn-navy {
+    background-color: #0a2540;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-navy:hover {
+    background-color: #1a4f8b;
+    color: #ffffff;
+}
+
+.body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+    color: #333;
+}
+
+.container {
+    margin: 0 15px;
+}
+
+.form-box {
+    width: 100%;
+    max-width: 450px;
+    padding: 30px;
+    background: #ffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.heading {
+    font-size: 34px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-box input,
+.form-box select {
+    width: 100%;
+    padding: 12px;
+    background: #eee;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #333;
+    margin: 20px 0;
+    cursor: pointer;
+    appearance: auto;
+}

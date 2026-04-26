@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Timetable - CampusSphere</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-mid: #1e293b;
+            --primary-light: #1e3a8a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: #eff6ff;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-soft: #f1f5f9;
+            --text-main: #0f172a;
+            --text-mid: #475569;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --success: #10b981; --success-bg: #d1fae5;
+            --warning: #f59e0b; --warning-bg: #fef3c7;
+            --danger: #ef4444;  --danger-bg: #fee2e2;
+            --shadow-sm: 0 1px 3px rgba(15,23,42,0.06);
+            --shadow-md: 0 4px 16px rgba(15,23,42,0.08);
+        }
+        body { background: var(--background); font-family: 'Inter', sans-serif; color: var(--primary); }
+        .topbar {
+            background: var(--surface); border-bottom: 1px solid var(--border-color);
+            padding: 14px 32px; display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .brand-logo {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white; border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; font-weight: 800; font-size: 0.9rem; margin-right: 10px;
+        }
+        .page-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white; padding: 40px 0 50px;
+        }
+        .data-card {
+            background: var(--surface); border-radius: 16px;
+            border: 1px solid var(--border-color); padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 10px 20px rgba(0,0,0,0.03);
+            margin-top: -20px;
+        }
+        .table th {
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.8px; color: var(--text-light); border-bottom: 1px solid var(--border-color);
+            padding: 14px 20px; background: var(--border-soft);
+        }
+        .table td { padding: 16px 20px; vertical-align: middle; border-bottom: 1px solid var(--border-soft); font-size: 0.95rem; }
+        .badge-status { padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+        
+        /* Highlight colors */
+        .status-scheduled { background: #d1fae5; color: #059669; }
+        .status-missed { background: #fee2e2; color: #dc2626; }
+        .status-rescheduled { background: #fef3c7; color: #d97706; }
+        
+        .row-missed { background: #fef2f2 !important; }
+        .row-rescheduled { background: #fffbeb !important; }
+        
+        .time-badge { background: var(--border-soft); padding: 4px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+    
+        /* ── Unified Navy Topbar (Student) ── */
+        .topbar, .navbar, header.topbar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important;
+            border-bottom: none !important;
+        }
+        .topbar .navbar-brand, .topbar h4, .topbar .brand-name { color: white !important; }
+        .topbar .btn-outline-secondary, .topbar .btn { border-color: rgba(255,255,255,0.2) !important; color: rgba(255,255,255,0.85) !important; }
+        .topbar .btn:hover { background: rgba(255,255,255,0.15) !important; color: white !important; }
+        
+        /* ── Unified Card + Button styles ── */
+        .btn-primary, .btn-accent {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+        .btn-primary:hover { background: #1d4ed8 !important; border-color: #1d4ed8 !important; transform: translateY(-1px); }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+        }
+        </style>
+    <link rel="stylesheet" href="{% static 'css/campus.css' %}">
+</head>
+<body>
+
+<div class="topbar">
+    <div class="d-flex align-items-center">
+        <div class="brand-logo">CS</div>
+        <span style="font-size: 1.1rem; font-weight: 800;">CampusSphere</span>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <a href="{% url 'student_dashboard' %}" class="text-muted text-decoration-none fw-500"><i class="bi bi-grid me-1"></i>Dashboard</a>
+    </div>
+</div>
+
+<div class="page-hero">
+    <div class="container">
+        <h1 class="fw-800 mb-1" style="font-size: 2rem; letter-spacing: -0.5px;">Smart Timetable</h1>
+        <p class="mb-0" style="color: rgba(255,255,255,0.7);">View your scheduled, missed, and auto-rescheduled classes.</p>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="data-card">
+        {% if not timetable %}
+        <div class="text-center py-5">
+            <i class="bi bi-calendar-x text-muted" style="font-size: 2rem;"></i>
+            <h5 class="fw-700 mt-3">No Classes Found</h5>
+            <p class="text-muted">Your timetable is currently empty.</p>
+        </div>
+        {% else %}
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Time Slot</th>
+                        <th>Faculty</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in timetable %}
+                    <tr class="{% if t.status == 'Missed' %}row-missed{% elif t.status == 'Rescheduled' %}row-rescheduled{% endif %}">
+                        <td class="fw-600">{{ t.class_date|date:"M d, Y" }} <br><span class="text-muted small fw-normal">{{ t.class_date|date:"l" }}</span></td>
+                        <td><span class="fw-700" style="color: var(--primary);">{{ t.subject_name }}</span></td>
+                        <td>
+                            <span class="time-badge"><i class="bi bi-clock me-1"></i>{{ t.start_time }} - {{ t.end_time }}</span>
+                        </td>
+                        <td class="text-muted"><i class="bi bi-person me-1"></i>{{ t.faculty_name }}</td>
+                        <td>
+                            <span class="badge-status 
+                                {% if t.status == 'Scheduled' %}status-scheduled
+                                {% elif t.status == 'Missed' %}status-missed
+                                {% elif t.status == 'Rescheduled' %}status-rescheduled{% endif %}">
+                                {% if t.status == 'Scheduled' %}<i class="bi bi-check-circle me-1"></i>
+                                {% elif t.status == 'Missed' %}<i class="bi bi-x-circle me-1"></i>
+                                {% elif t.status == 'Rescheduled' %}<i class="bi bi-arrow-repeat me-1"></i>{% endif %}
+                                {{ t.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

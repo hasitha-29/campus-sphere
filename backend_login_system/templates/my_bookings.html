@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Queue Bookings - CampusSphere</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-mid: #1e293b;
+            --primary-light: #1e3a8a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --accent-soft: #eff6ff;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --border-color: #e2e8f0;
+            --border-soft: #f1f5f9;
+            --text-main: #0f172a;
+            --text-mid: #475569;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --success: #10b981; --success-bg: #d1fae5;
+            --warning: #f59e0b; --warning-bg: #fef3c7;
+            --danger: #ef4444;  --danger-bg: #fee2e2;
+            --shadow-sm: 0 1px 3px rgba(15,23,42,0.06);
+            --shadow-md: 0 4px 16px rgba(15,23,42,0.08);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Top Navbar */
+        .saas-navbar {
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+        }
+
+        /* Table Card */
+        .premium-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            margin-top: 40px;
+        }
+        
+        .table-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table-header h4 {
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            margin: 0;
+        }
+        
+        .table-custom th {
+            background-color: var(--background);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .table-custom td {
+            padding: 20px 24px;
+            vertical-align: middle;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-soft);
+        }
+        .table-custom tr:last-child td { border-bottom: none; }
+
+        /* Badges */
+        .badge-premium {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .badge-success { background-color: var(--success-bg); color: var(--success); }
+        .badge-warning { background-color: var(--warning-bg); color: var(--warning); }
+        .badge-info { background-color: var(--info-bg); color: var(--info); }
+        
+        .btn-primary-saas {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .btn-primary-saas:hover { background-color: #1d4ed8; color: white;}
+        
+        .otp-box {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: var(--background);
+            border: 1px solid var(--border-color);
+            padding: 4px 12px;
+            border-radius: 6px;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+    
+        /* ── Unified Navy Topbar (Student) ── */
+        .topbar, .navbar, header.topbar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important;
+            border-bottom: none !important;
+        }
+        .topbar .navbar-brand, .topbar h4, .topbar .brand-name { color: white !important; }
+        .topbar .btn-outline-secondary, .topbar .btn { border-color: rgba(255,255,255,0.2) !important; color: rgba(255,255,255,0.85) !important; }
+        .topbar .btn:hover { background: rgba(255,255,255,0.15) !important; color: white !important; }
+        
+        /* ── Unified Card + Button styles ── */
+        .btn-primary, .btn-accent {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: white !important;
+        }
+        .btn-primary:hover { background: #1d4ed8 !important; border-color: #1d4ed8 !important; transform: translateY(-1px); }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
+        }
+        </style>
+    <link rel="stylesheet" href="{% static 'css/campus.css' %}">
+</head>
+<body>
+
+<nav class="navbar topbar py-3 shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <div class="d-flex flex-column align-items-center text-center me-3">
+                <div class="brand-logo" style="margin-bottom: 2px;">CS</div>
+                <span class="fw-bold" style="color: white; letter-spacing: -0.5px; font-size: 0.8rem; line-height: 1;">CampusSphere</span>
+            </div>
+            <span class="badge" style="background-color: rgba(255,255,255,0.15); color: #ffffff; font-weight: 600;">Student</span>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'student_dashboard' %}" class="btn btn-sm btn-outline-light fw-semibold" style="border-radius: 8px;">Dashboard</a>
+            <a href="{% url 'logout' %}" class="btn btn-sm text-danger fw-semibold" style="border-radius: 8px; background: transparent; border: 1px solid #fee2e2;">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            
+            {% if messages %}
+                <div class="mt-4">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="border-radius: 12px; border: none; box-shadow: var(--shadow-card);">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="premium-card">
+                <div class="table-header">
+                    <div>
+                        <h4>My Bookings</h4>
+                        <p class="text-muted mb-0 mt-1" style="font-size: 0.9rem;">Track your office service queue slots.</p>
+                    </div>
+                    <a href="{% url 'book_slot' %}" class="btn btn-primary-saas text-decoration-none">
+                        <i class="bi bi-calendar-plus me-1"></i> Book New Slot
+                    </a>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Service Type</th>
+                                <th>Slot Time</th>
+                                <th>OTP PIN</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Created On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td class="ps-4 fw-bold" style="color: var(--primary);">{{ booking.service_type }}</td>
+                                <td><span class="fw-semibold"><i class="bi bi-clock me-1 text-muted"></i> {{ booking.slot_time }}</span></td>
+                                <td>
+                                    {% if booking.status == 'Completed' %}
+                                    <span class="text-muted text-decoration-line-through">{{ booking.otp }}</span>
+                                    {% else %}
+                                    <span class="otp-box">{{ booking.otp }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.status == 'Booked' %}
+                                        <span class="badge badge-premium badge-info"><i class="bi bi-calendar-check me-1"></i> Booked</span>
+                                    {% elif booking.status == 'In-Progress' %}
+                                        <span class="badge badge-premium badge-warning"><i class="bi bi-arrow-repeat me-1"></i> In-Progress</span>
+                                    {% else %}
+                                        <span class="badge badge-premium badge-success"><i class="bi bi-check-circle me-1"></i> Completed</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-4 fw-medium text-muted">{{ booking.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted mb-2"><i class="bi bi-journal-x fs-1"></i></div>
+                                    <h6 class="fw-bold">No bookings found</h6>
+                                    <p class="text-muted small">You haven't booked any slots yet.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
